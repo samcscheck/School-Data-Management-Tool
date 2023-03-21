@@ -1,0 +1,41 @@
+.center {
+    text-align: center;
+    margin: auto;
+    width: 50%;
+    padding: 10px;
+}
+
+.tablecenter {
+    text-align: center;
+    margin: auto;
+    width: 80%;
+    padding: 10px;
+}
+
+a.button {
+    -webkit-appearance: button;
+    -moz-appearance: button;
+    appearance: button;
+    cursor: default;
+
+    text-decoration: none;
+    color: initial;
+    font: 13.5px Arial;
+    text-decoration: none;
+    background-color: #EEEEEE;
+    color: black;
+    padding: 2px 6px 2px 6px;
+    border-top: 1px solid #333333;
+    border-right: 1px solid #333333;
+    border-bottom: 1px solid #333333;
+    border-left: 1px solid #333333;
+    border-radius: 10%;
+}
+
+a:hover {
+    background-color: #e4e4e4;
+}
+
+.hiddenrow {
+    background-color:rgba(172, 255, 47, 0.367)
+}

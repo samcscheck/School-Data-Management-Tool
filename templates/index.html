@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<script>
+    // sets student/course/instructor values for user to create new instance
+    function typeChange(self) {
+        let type = self.value;
+        // if student is selected, set inputs to correspond to student input values
+        if (type == 'student') {
+            let labels = document.getElementsByName('type')
+            for (let i = 0; i < labels.length; i++) {
+                labels[i].value = 'student'
+            }
+            let elems = document.getElementsByName('input1')
+            for (let i = 0; i < elems.length; i++) {
+                elems[i].placeholder = "Student ID"
+                elems[i].value = null
+            }
+            elems = document.getElementsByName('input2')
+            for (let i = 0; i < elems.length; i++) {
+                elems[i].placeholder = "Name"
+                elems[i].value = null
+            }
+            elems = document.getElementsByName('input3')
+            for (let i = 0; i < elems.length; i++) {
+                elems[i].placeholder = "Credits"
+                elems[i].type = "number"
+                elems[i].min = "0"
+                elems[i].value = null
+            }
+        // if instructor is selected, set inputs to correspond to instructor input values
+        } else if (type == 'instructor') {
+            let labels = document.getElementsByName('type')
+            for (let i = 0; i < labels.length; i++) {
+                labels[i].value = 'instructor'
+            }
+            let elems = document.getElementsByName('input1')
+            for (let i = 0; i < elems.length; i++) {
+                elems[i].placeholder = "Instructor ID"
+                elems[i].value = null
+            }
+            elems = document.getElementsByName('input2')
+            for (let i = 0; i < elems.length; i++) {
+                elems[i].placeholder = "Name"
+                elems[i].value = null
+            }
+            elems = document.getElementsByName('input3')
+            for (let i = 0; i < elems.length; i++) {
+                elems[i].placeholder = "Department"
+                elems[i].type = "text"
+                elems[i].min = null
+                elems[i].value = null
+            }
+        // if course is selected, set inputs to correspond to course input values
+        } else if (type == 'course') {
+            let labels = document.getElementsByName('type')
+            for (let i = 0; i < labels.length; i++) {
+                labels[i].value = 'course'
+            }
+            let elems = document.getElementsByName('input1')
+            for (let i = 0; i < elems.length; i++) {
+                elems[i].placeholder = "Course ID"
+                elems[i].value = null
+            }
+            elems = document.getElementsByName('input2')
+            for (let i = 0; i < elems.length; i++) {
+                elems[i].placeholder = "Title"
+                elems[i].value = null
+            }
+            elems = document.getElementsByName('input3')
+            for (let i = 0; i < elems.length; i++) {
+                elems[i].placeholder = "Instructor ID"
+                elems[i].type = "number"
+                elems[i].min = "0"
+                elems[i].value = null
+            }
+        }
+    }
+
+    // init modify  
+    function startModify(type, id) {
+        // fills in boxes with current information and unhides the modify input boxes
+        row = document.getElementById('row-mod-' + type + '-' + id)
+        row.childNodes[1].childNodes[0].value = document.getElementById('db-' + type + '-1-' + id).innerText
+        row.childNodes[3].childNodes[0].value = document.getElementById('db-' + type + '-2-' + id).innerText
+        row.childNodes[5].childNodes[0].value = document.getElementById('db-' + type + '-3-' + id).innerText
+        document.getElementById('row-mod-' + type + '-' + id).hidden = false
+    }
+
+    // complete modify
+    function finishModify(type, id) {
+        // hides modify input boxes
+        document.getElementById('row-mod-' + type + '-' + id).hidden = true
+    }
+
+    // init grade update
+    function startGradeUpdate(id, course_id) {
+        // fills in boxes with current information and unhides the grade input box
+        row = document.getElementById('row-mod-grade' + '-' + id + '-' + course_id)
+        row.childNodes[3].childNodes[0].value = document.getElementById('db-grade-' + id + "-" + course_id).value
+        document.getElementById('row-mod-grade' + '-' + id + '-' + course_id).hidden = false
+    }
+
+    // complete grade update
+    function finishGradeUpdate(id, course_id) {
+        // hides grade input box
+        document.getElementById('row-mod-grade' + '-' + id + '-' + course_id).hidden = true
+    }
+
+    // copies selected value into hidden input tag to be accessible by flask
+    function selectChange(id) {
+        document.getElementById("select-input-" + id).value = document.getElementById("select-" + id).value
+    }
+
+    // toggles between "hide info" and "see info"
+    function toggleInfo(type, id) {
+        button = document.getElementById(type[0] + "-" + id + "-info")
+        // toggle button text
+        if(button.innerText == 'See Info') {
+            button.innerText = 'Hide Info'
+        } else {
+            button.innerText = 'See Info'
+        }
+        // hide/reveal information
+        if(type == 'student') {
+            document.getElementById('s-' + id + "-courses").hidden = !document.getElementById('s-' + id + "-courses").hidden
+        }
+        if(type == 'instructor') {
+            document.getElementById('i-' + id + "-courses").hidden = !document.getElementById('i-' + id + "-courses").hidden
+        }
+        if(type == 'course') {
+            document.getElementById('c-' + id + '-students').hidden = !document.getElementById('c-' + id + '-students').hidden
+        }
+    }
+</script>
+<html lang="en">
+    <head>
+        <!-- Meta data for the page -->
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="../static/css/site.css">
+        <link rel="icon" href="">
+        <title>Individual Assignment - Sam Scheck</title>
+    </head>
+    <!-- all visible content -->
+    <body>
+        <br/><br/>
+        <!-- table to hold create instructions and select tag to switch between type of instance to create -->
+        <table class="center">
+            <tr>
+                <td width="75%">
+                    <h2>Select to create a student, instructor, or course:</h2>
+                </td>
+                <td width="25%">
+                    <select name="data-type" onchange="typeChange(this)">
+                        <option value="student" selected>Student</option>
+                        <option value="instructor">Instructor</option>
+                        <option value="course">Course</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <!-- table with create functionality -->
+                <td colspan="2">
+                    <br/><br/>
+                    <form action="/create" method="POST">
+                        <table id="inputs-create" class="center">
+                            <tr>
+                                <td>
+                                    <input type="number" min="0" name="input1" placeholder="Student ID" required/>
+                                </td>
+                                <td>
+                                    <input type="text" name="input2" placeholder="Name" required/>
+                                </td>
+                                <td>
+                                    <input type="number" min="0" name="input3" placeholder="Credits" required/>
+                                </td>
+                                <td hidden="true"><input type="text" name="type" value="student"/></td>
+                                <td><button type="submit">Create</button></td>
+                            </tr>
+                        </table>
+                    </form>
+                </td>
+            </tr>
+        </table>
+
+        <!-- ---------------- tables from API -------------------- -->
+
+        <form action="/modify" method="POST">
+        <br/><br/><br/><br/><br/>
+        <div class="tablecenter">
+            <!-- Students table -->
+            <h3><u>Students</u></h3>
+            <table class="tablecenter">
+                <thead>
+                    <th width="25%">ID</th>
+                    <th width="25%">Name</th>
+                    <th width="25%">Credits</th>
+                    <th width="25%"></th>
+                </thead>
+                {% for data in students %}
+                <tbody>
+                    <!-- displays current data -->
+                    <tr>
+                        <td id="db-student-1-{{data.id}}">{{data.id}}</td>
+                        <td id="db-student-2-{{data.id}}">{{data.name}}</td>
+                        <td id="db-student-3-{{data.id}}">{{data.credits}}</td>
+                        <td>
+                            <!-- see info, modify, delete buttons -->
+                            <a onclick="toggleInfo('student', {{data.id}})" class="button" type="button" id="s-{{data.id}}-info">See Info</a>
+                            <a onclick="startModify('student', {{data.id}})" class="button" type="button">Modify</a>
+                            <a href="/delete/{{'student'}}/{{data.id}}" class="button" type="button">Delete</a>
+                        </td>
+                    </tr>
+                    <!-- code to modify student information -->
+                    <form action="/modify" method="POST">
+                        <input value="student" name="mod-type" hidden="true"/>
+                        <tr class="hiddenrow" hidden="true" id="row-mod-student-{{data.id}}">
+                            <td>
+                                <input value="{{data.id}}" hidden="true" name="mod-student-1-hidden" type="number"/>
+                                <input value="{{data.id}}" name="mod-student-1" disabled="true" type="number"/>
+                            </td>
+                            <td><input value="{{data.name}}" name="mod-student-2" type="text" required/></td>
+                            <td><input value="{{data.credits}}" name="mod-student-3" type="number" min="0" required/></td>
+                            <td>
+                                <button onclick="finishModify('student', {{data.id}})" type="submit">Submit</button>
+                                <button onclick="finishModify('student', {{data.id}})" type="button">Cancel</button>
+                            </td>
+                        </tr>
+                    </form>
+                    <tr hidden="true" id="s-{{data.id}}-courses">
+                        <td colspan="4">
+                            <!-- displays current course details for student and option to update grade for each course -->
+                            <table class="center">
+                                <tr>
+                                    <td><b>Course ID</b></td>
+                                    <td><b>Grade</b></td>
+                                    <td></td>
+                                </tr>
+                                {% for course in data.courses_details %}
+                                <tr>
+                                    <td id="db-grade-{{data.id}}-{{course.course_id}}">{{course.course_id}}</td>
+                                    <td>{{course.grade}}</td>
+                                    <td><button type="button" onclick="startGradeUpdate({{data.id}}, {{course.course_id}})">Update Grade</button></td>
+                                </tr>
+                                <!-- code to modify grade information -->
+                                <form action="/modify_grade" method="POST">
+                                    <input value="{{data.id}},{{course.course_id}}" name="student-id" hidden="true"/>
+                                    <tr class="hiddenrow" hidden="true" id="row-mod-grade-{{data.id}}-{{course.course_id}}">
+                                        <td></td>
+                                        <td><input value="{{course.grade}}" name="mod-grade" type="number" min="0"/></td>
+                                        <td>
+                                            <button onclick="finishGradeUpdate({{data.id}}, {{course.course_id}})" type="submit">Update</button>
+                                            <button onclick="finishGradeUpdate({{data.id}}, {{course.course_id}})" type="button">Cancel</button>
+                                        </td>
+                                    </tr>
+                                </form>
+                                {% endfor%}
+                                <!-- code to add/remove courses for each student -->
+                                <tr>
+                                    <form action="/student_add_remove_course" method="POST">
+                                        <td colspan="3">
+                                            <table class="center">
+                                                <tr>
+                                                    <td>
+                                                        <input name="add-remove-sid" hidden="true" value="{{data.id}}"/>
+                                                        <input name="add-remove-cid" placeholder="Course ID" type="number"/>
+                                                    </td>
+                                                    <td><button type="submit">Add/Remove Course</button></td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </form>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+                {% endfor%}
+            </table>
+            <!-- Instructors table -->
+            <h3><u>Instructors</u></h3>
+            <table class="tablecenter">
+                <thead>
+                    <th width="25%">ID</th>
+                    <th width="25%">Name</th>
+                    <th width="25%">Department</th>
+                    <th width="25%"></th>
+                </thead>
+                {% for data in instructors %}
+                <tbody>
+                    <!-- displays current data -->
+                    <tr>
+                        <td id="db-instructor-1-{{data.id}}">{{data.id}}</td>
+                        <td id="db-instructor-2-{{data.id}}">{{data.name}}</td>
+                        <td id="db-instructor-3-{{data.id}}">{{data.department}}</td>
+                        <td>
+                            <!-- buttons to see info, modify, and delete -->
+                            <a onclick="toggleInfo('instructor', {{data.id}})" class="button" type="button" id="i-{{data.id}}-info">See Info</a>
+                            <a onclick="startModify('instructor', {{data.id}})" class="button" type="button">Modify</a>
+                            <a href="/delete/{{'instructor'}}/{{data.id}}" class="button" type="button">Delete</a>
+                        </td>
+                    </tr>
+                    <!-- code to modify instructor information -->
+                    <form action="/modify" method="POST">
+                        <input value="instructor" name="mod-type" hidden="true"/>
+                        <tr class="hiddenrow" hidden="true" id="row-mod-instructor-{{data.id}}">
+                            <td>
+                                <input value="{{data.id}}" hidden="true" name="mod-instructor-1-hidden" type="number"/>
+                                <input value="{{data.id}}" name="mod-instructor-1" disabled="true" type="number"/>
+                            </td>
+                            <td><input value="{{data.name}}" name="mod-instructor-2" type="text"/></td>
+                            <td><input value="{{data.department}}" name="mod-instructor-3" type="text"/></td>
+                            <td>
+                                <button onclick="finishModify('instructor', {{data.id}})" type="submit">Submit</button>
+                                <button onclick="finishModify('instructor', {{data.id}})" type="button">Cancel</button>
+                            </td>
+                        </tr>
+                    </form>
+                    <!-- displays current courses taught by each instructor -->
+                    <tr hidden="true" id="i-{{data.id}}-courses">
+                        <td colspan="4">
+                            <table class="center">
+                                <tr>
+                                    <td><b>Course ID</b></td>
+                                    <td></td>
+                                </tr>
+                                {% for course in data.courses %}
+                                <tr>
+                                    <td id="db-course-{{data.id}}-{{course.id}}">{{course.id}}</td>
+                                    <td></td>
+                                </tr>
+                                {% endfor%}
+                                <tr>
+                                    <!-- code to add/remove courses for each instructor -->
+                                    <form action="/instructor_add_remove_course" method="POST">
+                                        <td colspan="3">
+                                            <table class="center">
+                                                <tr>
+                                                    <td>
+                                                        <input name="add-remove-iid" hidden="true" value="{{data.id}}"/>
+                                                        <input name="add-remove-cid" placeholder="Course ID" type="number"/>
+                                                    </td>
+                                                    <td><button type="submit">Add/Remove Course</button></td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </form>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+                {% endfor%}
+            </table>
+            <!-- Courses table -->
+            <h3><u>Courses</u></h3>
+            <table class="tablecenter">
+                <thead>
+                    <th width="25%">ID</th>
+                    <th width="25%">Title</th>
+                    <th width="25%">Instructor ID</th>
+                    <th width="25%"></th>
+                </thead>
+                {% for data in courses %}
+                <tbody>
+                    <!-- displays current data -->
+                    <tr>
+                        <td id="db-course-1-{{data.id}}">{{data.id}}</td>
+                        <td id="db-course-2-{{data.id}}">{{data.title}}</td>
+                        <td id="db-course-3-{{data.id}}">{{data.instructor_id}}</td>
+                        <td>
+                            <!-- see info, modify, delete buttons -->
+                            <a onclick="toggleInfo('course', {{data.id}})" class="button" type="button" id="c-{{data.id}}-info">See Info</a>
+                            <a onclick="startModify('course', {{data.id}})" class="button" type="button">Modify</a>
+                            <a href="/delete/{{'course'}}/{{data.id}}" class="button" type="button">Delete</a>
+                        </td>
+                    </tr>
+                    <!-- code to modify course information -->
+                    <form action="/modify" method="POST">
+                        <input value="course" name="mod-type" hidden="true"/>
+                        <tr class="hiddenrow" hidden="true" id="row-mod-course-{{data.id}}">
+                            <td>
+                                <input value="{{data.id}}" hidden="true" name="mod-course-1-hidden" type="number"/>
+                                <input value="{{data.id}}" name="mod-course-1" disabled="true" type="number"/>
+                            </td>
+                            <td><input value="{{data.title}}" name="mod-course-2" type="text"/></td>
+                            <td><select id="select-{{data.id}}" onchange="selectChange({{data.id}})">
+                                {% for data in instructors %}
+                                <option value="{{data.id}}">{{data.id}}</option>
+                                {% endfor%}
+                            </select><input id="select-input-{{data.id}}" hidden="true" value="{{data.instructor_id}}" name="mod-course-3" type="number" min="0"/></td>
+                            <td>
+                                <button onclick="finishModify('course', {{data.id}})" type="submit">Submit</button>
+                                <button onclick="finishModify('course', {{data.id}})" type="button">Cancel</button>
+                            </td>
+                        </tr>
+                    </form>
+                    <!-- displays current enrollment information for each course -->
+                    <tr hidden="true" id="c-{{data.id}}-students">
+                        <td colspan="4">
+                            <table class="center">
+                                <tr>
+                                    <td><b>Student ID</b></td>
+                                    <td></td>
+                                </tr>
+                                {% for student in data.enrollment_details %}
+                                <tr>
+                                    <td id="db-student-{{data.id}}-{{student.id}}">{{student.student_id}}</td>
+                                    <td></td>
+                                </tr>
+                                {% endfor%}
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+                {% endfor%}
+            </table>
+        </div>
+        </form>
+    </body>
+</html>
